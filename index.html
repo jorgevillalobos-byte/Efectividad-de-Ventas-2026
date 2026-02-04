@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Resumen Ejecutivo: Métricas Clave y Estadísticas del Mes</title>
+  <title>Efectividad de Ventas Enero 2026</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -123,7 +123,7 @@
 
 <body>
   <div class="wrap">
-    <h1>Resumen Ejecutivo: Métricas Clave y Estadísticas del Mes</h1>
+    <h1>Efectividad de Ventas Enero 2026</h1>
     <div class="heroimg" aria-hidden="true"></div>
 
     <!-- =========================
@@ -185,7 +185,6 @@
 
     <!-- =========================
          RESUMEN EJECUTIVO: COMPARATIVA DE PERÍODOS (FUNDAMENTAL)
-         - Misma estructura: título + bloque comparativo
          ========================= -->
     <h2>Resumen Ejecutivo: Comparativa de Períodos</h2>
     <div class="sp-14"></div>
@@ -215,7 +214,7 @@
     <div class="sp-24"></div>
 
     <!-- =========================
-         Resumen General por Equipo (misma estructura del ejemplo)
+         Resumen General por Equipo
          ========================= -->
     <h2>Resumen General por Equipo</h2>
     <div class="sp-8"></div>
@@ -227,7 +226,7 @@
     <div class="sp-24"></div>
 
     <!-- =========================
-         Eficiencia (3 tarjetas como el ejemplo)
+         Eficiencia (3 tarjetas)
          ========================= -->
     <h2>Análisis de Tiempo y Eficiencia Operativa</h2>
     <div class="sp-14"></div>
@@ -241,7 +240,7 @@
     <div class="sp-24"></div>
 
     <!-- =========================
-         Rendimiento por equipo (tarjetas como el ejemplo)
+         Rendimiento por equipo (tarjetas)
          ========================= -->
     <div class="heroimg" aria-hidden="true" style="height:120px"></div>
 
@@ -258,7 +257,7 @@
     <div class="sp-24"></div>
 
     <!-- =========================
-         Conclusiones (estructura del ejemplo)
+         Conclusiones
          ========================= -->
     <h2>Conclusiones y Recomendaciones Estratégicas</h2>
     <div class="sp-14"></div>
@@ -272,7 +271,7 @@
 
   <script>
     // =========================
-    // DATA (tu semana)
+    // DATA (tu semana) - ACTUALIZADO: P2 campañas = 7
     // =========================
     const DATA = {
       periodLabels: {
@@ -300,7 +299,9 @@
         { name: "Cotizaciones", p1: 4, p2: 8, format: "int" },
         { name: "Success HubSpot", p1: 37, p2: 33, format: "int" },
         { name: "Facturado Nuevo", p1: 23422, p2: 20196, format: "money" },
-        { name: "Total Campañas", p1: 5, p2: 0, format: "int" },
+
+        /* ✅ ACTUALIZADO */
+        { name: "Total Campañas", p1: 5, p2: 7, format: "int" },
 
         // bloque inferior del resumen
         { name: "Clientes (F. sin conexión)", p1: 4, p2: 2, format: "int" },
@@ -316,7 +317,7 @@
 
       // Stats para “Campañas y Clientes” y “Inbound”
       stats: {
-        totalCampañas: { p1: 5, p2: 0 },
+        totalCampañas: { p1: 5, p2: 7 },     // ✅ ACTUALIZADO
         totalClientes: { p1: 9, p2: 5 },
         inboundMM: { p1: 1, p2: 3 },
         facturadoNuevo: { p1: 23422, p2: 20196 },
@@ -379,10 +380,10 @@
       ],
 
       conclusions: [
-        { title: "Facturación Positiva / Negativa", text: "Variación de -$3,226 en ingresos (P1 $23,422 → P2 $20,196)." },
-        { title: "Optimizar Conversión", text: "Inbound sube (+35), pero cae facturación. Enfocar en seguimiento y conversión de leads a cierres." },
-        { title: "Capacitación Continua", text: "Refuerzo de objeciones, guiones y seguimiento para sostener volumen con mejor tasa de éxito." },
-        { title: "Próximos Pasos", text: "Implementar seguimiento semanal de KPIs, metas individuales por agente y programa de reconocimiento." }
+        { title: "Facturación", text: "Variación de -$3,226 en ingresos (P1 $23,422 → P2 $20,196)." },
+        { title: "Campañas", text: "P2 sube a 7 campañas (P1: 5). Evaluar calidad/segmentación para mejorar conversión." },
+        { title: "Conversión", text: "Inbound sube (+35), pero cae facturación. Enfocar en seguimiento y conversión de leads a cierres." },
+        { title: "Eficiencia", text: "Promedio Timer baja 0:52:16 por agente; mantener prácticas que reducen tiempo sin afectar calidad." }
       ]
     };
 
@@ -399,7 +400,6 @@
       return { cls:"warn", sym:"•" };
     }
 
-    // time "HH:MM:SS" or "HHH:MM:SS" -> seconds
     function timeToSec(t){
       const parts = String(t).trim().split(":").map(Number);
       if (parts.length !== 3 || parts.some(Number.isNaN)) return 0;
@@ -439,26 +439,25 @@
         const b = badgeForDiff(d);
         return { ...b, text: `${b.sym} ${int(Math.abs(d))}` };
       }
-      // text: no delta numérico
       return { cls:"warn", sym:"•", text:"—" };
     }
 
     // =========================
-    // Render top KPI cards (IGUAL AL EJEMPLO)
+    // Render top KPI cards
     // =========================
     const kpiGrid = document.getElementById("kpiGrid");
     DATA.topCards.forEach(k => {
-      let diffNum = 0;
+      let diff = 0;
       let badge = { cls:"warn", sym:"•", text:"—" };
 
       if (k.format === "money"){
-        diffNum = Number(k.p2||0) - Number(k.p1||0);
-        const b = badgeForDiff(diffNum);
-        badge = { ...b, text: `${b.sym} ${diffNum>=0?"+":""}${money(Math.abs(diffNum))}` };
+        diff = Number(k.p2||0) - Number(k.p1||0);
+        const b = badgeForDiff(diff);
+        badge = { ...b, text: `${b.sym} ${diff>=0?"+":""}${money(Math.abs(diff))}` };
       } else {
-        diffNum = Number(k.p2||0) - Number(k.p1||0);
-        const b = badgeForDiff(diffNum);
-        badge = { ...b, text: `${b.sym} ${diffNum>=0?"+":""}${int(Math.abs(diffNum))}` };
+        diff = Number(k.p2||0) - Number(k.p1||0);
+        const b = badgeForDiff(diff);
+        badge = { ...b, text: `${b.sym} ${diff>=0?"+":""}${int(Math.abs(diff))}` };
       }
 
       const el = document.createElement("div");
@@ -477,28 +476,25 @@
     });
 
     // =========================
-    // Campañas y Clientes (valor tipo “19 | 40”)
+    // Campañas y Clientes
     // =========================
     document.getElementById("campClientesValue").textContent =
       `${safe(DATA.stats.totalCampañas.p2)} | ${safe(DATA.stats.totalClientes.p2)}`;
 
-    // Conversiones MM (usamos Inbound MM del resumen)
     document.getElementById("convMM").textContent = safe(DATA.stats.inboundMM.p2);
-
-    // Facturado Nuevo (sección)
     document.getElementById("factNuevo").textContent = money(DATA.stats.facturadoNuevo.p2);
 
     // =========================
-    // Resultados Inbound (misma estructura; con lo disponible)
+    // Resultados Inbound
     // =========================
     document.getElementById("inbMesAnt").textContent = safe(DATA.stats.inboundMesesAnt.p2);
     document.getElementById("inbMM").textContent = safe(DATA.stats.inboundMM.p2);
     document.getElementById("leadsInbound").textContent = safe(DATA.stats.leadsInbound.p2);
     document.getElementById("ipc").textContent = money(DATA.stats.ipc.p2);
-    document.getElementById("roi").textContent = "—"; // no viene en tu data semanal
+    document.getElementById("roi").textContent = "—";
 
     // =========================
-    // Comparativa de Períodos (TABLA FUNDAMENTAL)
+    // Comparativa de Períodos
     // =========================
     document.getElementById("p1Label").textContent = DATA.periodLabels.p1;
     document.getElementById("p2Label").textContent = DATA.periodLabels.p2;
@@ -517,7 +513,7 @@
     });
 
     // =========================
-    // Teams (misma estructura del ejemplo)
+    // Teams
     // =========================
     const teamsWrap = document.getElementById("teamsWrap");
     DATA.teams.forEach(t => {
@@ -551,7 +547,7 @@
     });
 
     // =========================
-    // Eficiencia (3 tarjetas)
+    // Eficiencia
     // =========================
     const effWrap = document.getElementById("effWrap");
     const effCards = [
@@ -570,9 +566,7 @@
     });
 
     // =========================
-    // Rendimiento por equipo (tarjetas como el ejemplo)
-    // - Anuar: top 3 por P2
-    // - Post: top 5 por P2
+    // Rendimiento por equipo (tarjetas)
     // =========================
     function renderPerformance(teamName, containerId, topN){
       const list = DATA.agents
@@ -598,7 +592,7 @@
     renderPerformance("Equipo Post Venta", "perfPost", 5);
 
     // =========================
-    // Conclusiones (tarjetas)
+    // Conclusiones
     // =========================
     const conclusionsWrap = document.getElementById("conclusionsWrap");
     DATA.conclusions.forEach(c => {
@@ -613,4 +607,3 @@
   </script>
 </body>
 </html>
-```
