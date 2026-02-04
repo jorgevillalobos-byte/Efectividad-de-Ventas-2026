@@ -1,119 +1,570 @@
-const DATA = {
-  periodLabels: { p1: "19–23 Ene 2026", p2: "26–30 Ene 2026" },
-  lastUpdatedISO: new Date().toISOString(),
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Resumen Ejecutivo | Ventas</title>
 
-  // KPIs Principales (del RESUMEN COMPARATIVO)
-  kpis: [
-    { name: "Total de Llamadas (Dials)", p1: 10313, p2: 9392, format: "int" },
-    { name: "Contacts", p1: 3178, p2: 3009, format: "int" },
-    { name: "Success en Five9", p1: 40, p2: 38, format: "int" },
-    { name: "Lead Inbound", p1: 70, p2: 105, format: "int" },
-    { name: "Presentación", p1: 33, p2: 25, format: "int" },
-    { name: "Cotizaciones", p1: 4, p2: 8, format: "int" },
-    { name: "Success HubSpot", p1: 37, p2: 33, format: "int" }, // ver nota arriba
-    { name: "Facturado Nuevo", p1: 23422, p2: 20196, format: "money" }
-  ],
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
-  // Tabla “Campañas y Clientes” (bloque de stats inferior del resumen)
-  monthStats: [
-    { metric: "Total Campañas", value: 5 },                 // P1
-    { metric: "Total Campañas (P2)", value: 0 },            // P2
-    { metric: "Clientes (F. sin conexión) P1", value: 4 },
-    { metric: "Clientes (F. sin conexión) P2", value: 2 },
-    { metric: "Inbound Meses Anteriores P1", value: 4 },
-    { metric: "Inbound Meses Anteriores P2", value: 0 },
-    { metric: "Inbound MM (P1)", value: 1 },
-    { metric: "Inbound MM (P2)", value: 3 },
-    { metric: "Total Clientes (P1)", value: 9 },
-    { metric: "Total Clientes (P2)", value: 5 },
-    { metric: "Conversión de Clientes (P1)", value: "24.32%" },
-    { metric: "Conversión de Clientes (P2)", value: "15.15%" },
-    { metric: "Conversión Inbound MM (P1)", value: "1.43%" },
-    { metric: "Conversión Inbound MM (P2)", value: "2.86%" },
-    { metric: "IPC (P1)", value: "$212.93" },
-    { metric: "IPC (P2)", value: "$141.23" }
-  ],
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
-  // Mantengo esta sección porque el HTML la imprime.
-  // Como no venía inversión/monto vendido/ROI explícito, lo dejo neutral y usamos el insight rápido.
-  inbound: {
-    investment: 0,
-    soldAmount: 0,
-    leads: 0,
-    roi: 0
-  },
+  <style>
+    :root{
+      --bg: #ffffff;
+      --text: #101828;
+      --muted: #667085;
+      --line: #e4e7ec;
+      --card: #f9fafb;
+      --shadow: 0 8px 24px rgba(16,24,40,.08);
+      --radius: 16px;
 
-  // Resumen por equipo (agregado desde tu tabla por agente)
-  teams: [
-    {
-      team: "Equipo de Ventas Anuar",
-      agents: 6,
-      calls: { p1: 6014, p2: 5414 },
-      contacts: { p1: 690, p2: 697 },
-      billing: { p1: 6936, p2: 7625 },
-      avgPerAgent: { p1: 1156.00, p2: 1089.29 },
-      topPerformer: "Mariett Castro",
-      topPerformerNote: "P1 $2,505 → P2 $1,475"
-    },
-    {
-      team: "Post venta",
-      agents: 9,
-      calls: { p1: 4299, p2: 3978 },
-      contacts: { p1: 2488, p2: 2312 },
-      billing: { p1: 16486, p2: 12571 },
-      avgPerAgent: { p1: 1831.78, p2: 1396.78 },
-      topPerformer: "Alejandra Rodriguez",
-      topPerformerNote: "P1 $4,000 → P2 $2,950"
+      --good: #12b76a;
+      --bad:  #f04438;
+      --warn: #f79009;
     }
-  ],
-
-  // Eficiencia (del resumen)
-  efficiency: [
-    { name: "Promedio Timer P1", value: "11:09:43 por agente" },
-    { name: "Promedio Timer P2", value: "10:17:27 por agente" },
-    { name: "Reducción de Tiempo", value: "0:52:16 menos por agente" }
-  ],
-
-  // Rendimiento por agente (meto P1/P2 por facturado; si un agente no existía en un período, va en 0)
-  agents: [
-    // Ventas Anuar
-    { name: "Angeles Espinoza", team: "Equipo de Ventas Anuar", p1: 1275, p2: 1800, note: "Sube facturación en P2" },
-    { name: "Geraldine Murillo", team: "Equipo de Ventas Anuar", p1: 1000, p2: 0, note: "P2 sin facturación registrada" },
-    { name: "Judith Mercado", team: "Equipo de Ventas Anuar", p1: 0, p2: 2050, note: "Mayor empuje en P2 (cotizaciones y hubspot)" },
-    { name: "Rodrigo Guadamuz", team: "Equipo de Ventas Anuar", p1: 1006, p2: 1100, note: "Mejora ligera vs P1" },
-    { name: "Alexia Rodríguez", team: "Equipo de Ventas Anuar", p1: 1150, p2: 1200, note: "Estable (+$50)" },
-    { name: "Mariett Castro", team: "Equipo de Ventas Anuar", p1: 2505, p2: 1475, note: "Caída vs P1, revisar pipeline/seguimiento" },
-    { name: "Steven Pereira", team: "Equipo de Ventas Anuar", p1: 0, p2: 0, note: "Nuevo en P2 (sin facturación)" },
-
-    // Post venta
-    { name: "Andrea Rivera", team: "Post venta", p1: 3150, p2: 1266, note: "Baja fuerte vs P1" },
-    { name: "Alejandra Rodriguez", team: "Post venta", p1: 4000, p2: 2950, note: "Top del equipo P2" },
-    { name: "Ariana Leiva", team: "Post venta", p1: 2550, p2: 0, note: "P2 sin facturación registrada" },
-    { name: "David Espinoza", team: "Post venta", p1: 900, p2: 2500, note: "Gran mejora en P2" },
-    { name: "Jonathan Salinas", team: "Post venta", p1: 400, p2: 2500, note: "Crecimiento significativo" },
-    { name: "Mario Castano", team: "Post venta", p1: 1500, p2: 580, note: "Baja, revisar conversión/seguimiento" },
-    { name: "Nicole Garcia", team: "Post venta", p1: 1750, p2: 1525, note: "Leve baja" },
-    { name: "Paola Paz", team: "Post venta", p1: 0, p2: 0, note: "Sin facturación registrada" },
-    { name: "Veronica Ramirez", team: "Post venta", p1: 2236, p2: 1250, note: "Baja vs P1" }
-  ],
-
-  // Conclusiones (auto con base en deltas)
-  conclusions: [
-    {
-      title: "Volumen de llamadas y contactos a la baja",
-      text: "Dials -921 y Contacts -169 en P2; revisar pacing diario, listas y horarios de marcación."
-    },
-    {
-      title: "Inbound sube, pero cae facturación",
-      text: "Lead Inbound +35 (70 → 105) pero Facturado Nuevo -$3,226 (23,422 → 20,196). Oportunidad clara de mejorar conversión/seguimiento."
-    },
-    {
-      title: "Cotizaciones mejoran, presentaciones bajan",
-      text: "Cotizaciones +4 (4 → 8) mientras Presentaciones -8 (33 → 25). Revisar la calidad del lead y el handoff presentación→cotización."
-    },
-    {
-      title: "Eficiencia mejora",
-      text: "Promedio Timer por agente baja 0:52:16; mantener prácticas que reducen tiempo sin afectar calidad."
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
     }
-  ]
-};
+    .wrap{max-width: 1040px; margin:0 auto; padding: 40px 18px 80px;}
+    h1{margin:0 0 18px; font-size: clamp(26px, 3.2vw, 40px); letter-spacing:-0.02em;}
+    h2{margin:0 0 10px; font-size: 20px; letter-spacing:-0.01em;}
+    p{margin:0; color: var(--muted); line-height:1.6}
+    .sp-8{height:8px}
+    .sp-14{height:14px}
+    .sp-24{height:24px}
+    .divider{height:1px; background: var(--line); margin: 22px 0;}
+
+    .grid-kpis{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+    .grid-2{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+    .grid-3{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+    @media(min-width: 860px){
+      .grid-kpis{grid-template-columns: repeat(4, 1fr);}
+      .grid-2{grid-template-columns: 1.2fr .8fr;}
+      .grid-3{grid-template-columns: repeat(3, 1fr);}
+    }
+
+    .card{
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px 16px;
+    }
+
+    .kpi-title{
+      font-size: 14px;
+      font-weight: 700;
+      margin: 0 0 10px;
+    }
+    .kpi-line{
+      font-size: 13px;
+      color: var(--muted);
+      display:flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items:center;
+    }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      font-weight:700;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background:#fff;
+      font-size: 12px;
+    }
+    .badge.good{color: var(--good); border-color: rgba(18,183,106,.25)}
+    .badge.bad{color: var(--bad); border-color: rgba(240,68,56,.25)}
+    .badge.warn{color: var(--warn); border-color: rgba(247,144,9,.25)}
+
+    .mini-stat{
+      display:flex;
+      justify-content:space-between;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .mini-stat:last-child{border-bottom:none}
+    .mini-stat b{font-size: 14px}
+    .mini-stat span{color: var(--muted)}
+    .heroimg{
+      height: 160px;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: linear-gradient(135deg, #eef2ff, #fef3f2, #ecfdf3);
+      margin: 10px 0 20px;
+    }
+
+    .section-title{
+      font-weight:700;
+      margin: 0 0 8px;
+    }
+    .team-head{
+      display:flex;
+      flex-wrap:wrap;
+      gap: 10px;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom: 8px;
+    }
+    .pill{
+      font-size:12px;
+      color: var(--muted);
+      border: 1px solid var(--line);
+      background:#fff;
+      padding: 6px 10px;
+      border-radius: 999px;
+    }
+
+    table{
+      width:100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow:hidden;
+    }
+    th, td{
+      text-align:left;
+      padding: 10px 10px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+    th{color: var(--muted); font-weight: 700;}
+    tr:last-child td{border-bottom:none}
+
+    .foot{
+      margin-top: 26px;
+      color: var(--muted);
+      font-size: 12px;
+      display:flex;
+      justify-content:space-between;
+      flex-wrap:wrap;
+      gap: 10px;
+    }
+
+    canvas{width:100% !important; height: 260px !important;}
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <h1>Resumen Ejecutivo: Métricas Clave y Estadísticas del Mes</h1>
+
+    <div class="heroimg" aria-hidden="true"></div>
+
+    <!-- KPIs (como el ejemplo) -->
+    <div class="grid-kpis" id="kpiGrid"></div>
+
+    <div class="sp-24"></div>
+
+    <p>A continuación, presentamos las estadísticas del mes para complementar el análisis de rendimiento.</p>
+    <div class="sp-14"></div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="section-title">Campañas y Clientes</div>
+        <div id="campClientesRow" class="kpi-line" style="font-weight:700; color:var(--text)"></div>
+        <div class="divider"></div>
+
+        <div class="mini-stat">
+          <span>Conversiones MM</span>
+          <b id="convMM">—</b>
+        </div>
+        <div class="mini-stat">
+          <span>Facturado Nuevo</span>
+          <b id="factNuevo">—</b>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Resultados Inbound</div>
+        <div id="inboundBox"></div>
+      </div>
+    </div>
+
+    <div class="sp-24"></div>
+
+    <h2>Resumen Ejecutivo: Comparativa de Períodos</h2>
+    <div class="sp-8"></div>
+    <div class="card">
+      <canvas id="chartKpis"></canvas>
+    </div>
+
+    <div class="sp-24"></div>
+
+    <h2>Resumen General por Equipo</h2>
+    <div class="sp-8"></div>
+    <p>Una visión comparativa del rendimiento de nuestros equipos.</p>
+
+    <div class="sp-14"></div>
+
+    <div id="teamsWrap"></div>
+
+    <div class="sp-24"></div>
+
+    <h2>Análisis de Tiempo y Eficiencia Operativa</h2>
+    <div class="sp-14"></div>
+    <div class="grid-3" id="effWrap"></div>
+
+    <div class="sp-24"></div>
+
+    <h2>Rendimiento por Agente</h2>
+    <div class="sp-14"></div>
+
+    <div class="card" style="padding:0">
+      <table>
+        <thead>
+          <tr>
+            <th>Agente</th>
+            <th>Equipo</th>
+            <th>Período 1</th>
+            <th>Período 2</th>
+            <th>Descripción</th>
+          </tr>
+        </thead>
+        <tbody id="agentsTbody"></tbody>
+      </table>
+    </div>
+
+    <div class="sp-24"></div>
+
+    <h2>Conclusiones y Recomendaciones Estratégicas</h2>
+    <div class="sp-14"></div>
+    <div class="grid-2" id="conclusionsWrap"></div>
+
+    <div class="foot">
+      <div>Publicado en GitHub Pages (HTML/CSS/JS)</div>
+      <div id="updatedAt">—</div>
+    </div>
+  </div>
+
+  <script>
+    // =========================
+    // DATA (tu semana)
+    // =========================
+    const DATA = {
+      periodLabels: { p1: "Period - 1/19/2026 1/23/2026", p2: "Period - 1/26/2026 1/30/2026" },
+      lastUpdatedISO: new Date().toISOString(),
+
+      // RESUMEN COMPARATIVO (arriba)
+      kpis: [
+        { name: "Total de Llamadas (Dials)", p1: 10313, p2: 9392, format: "int" },
+        { name: "Contacts", p1: 3178, p2: 3009, format: "int" },
+        { name: "Talk Time", p1: "167:25:45", p2: "164:39:10", format: "time" },
+        { name: "Success Five9", p1: 40, p2: 38, format: "int" },
+        { name: "Lead Inbound", p1: 70, p2: 105, format: "int" },
+        { name: "Presentación", p1: 33, p2: 25, format: "int" },
+        { name: "Cotizaciones", p1: 4, p2: 8, format: "int" },
+        { name: "Success Hubspot", p1: 37, p2: 33, format: "int" },
+        { name: "Facturado Nuevo", p1: 23422, p2: 20196, format: "money" },
+        { name: "Total Campañas", p1: 5, p2: 0, format: "int" },
+      ],
+
+      // Bloque inferior del resumen
+      stats: {
+        clientesSinConexion: { p1: 4, p2: 2 },
+        referidos: { p1: 0, p2: 0 },
+        inboundMesesAnt: { p1: 4, p2: 0 },
+        inboundMM: { p1: 1, p2: 3 },
+        totalClientes: { p1: 9, p2: 5 },
+        promedioTimer: { p1: "11:09:43", p2: "10:17:27", diff: "-0:52:16" },
+        conversionClientes: { p1: "24.32%", p2: "15.15%" },
+        conversionInboundMM: { p1: "1.43%", p2: "2.86%" },
+        ipc: { p1: 212.93, p2: 141.23 }
+      },
+
+      teams: [
+        {
+          team: "Equipo de Ventas Anuar",
+          agents: 6,
+          calls: { p1: 6014, p2: 5414 },
+          contacts: { p1: 690, p2: 697 },
+          billing: { p1: 6936, p2: 7625 },
+          avgPerAgent: { p1: 1156.00, p2: 1089.29 },
+          topPerformer: "Mariett Castro",
+          topPerformerNote: "($2,505 → $1,475)",
+        },
+        {
+          team: "Post venta",
+          agents: 9,
+          calls: { p1: 4299, p2: 3978 },
+          contacts: { p1: 2488, p2: 2312 },
+          billing: { p1: 16486, p2: 12571 },
+          avgPerAgent: { p1: 1831.78, p2: 1396.78 },
+          topPerformer: "Alejandra Rodriguez",
+          topPerformerNote: "($4,000 → $2,950)",
+        }
+      ],
+
+      agents: [
+        { name: "Angeles Espinoza", team: "Equipo de Ventas Anuar", p1: 1275, p2: 1800, note: "Sube facturación en P2" },
+        { name: "Geraldine Murillo", team: "Equipo de Ventas Anuar", p1: 1000, p2: 0, note: "P2 sin facturación registrada" },
+        { name: "Judith Mercado", team: "Equipo de Ventas Anuar", p1: 0, p2: 2050, note: "Mayor empuje en P2" },
+        { name: "Rodrigo Guadamuz", team: "Equipo de Ventas Anuar", p1: 1006, p2: 1100, note: "Mejora ligera vs P1" },
+        { name: "Alexia Rodríguez", team: "Equipo de Ventas Anuar", p1: 1150, p2: 1200, note: "Estable" },
+        { name: "Mariett Castro", team: "Equipo de Ventas Anuar", p1: 2505, p2: 1475, note: "Caída vs P1" },
+
+        { name: "Andrea Rivera", team: "Post venta", p1: 3150, p2: 1266, note: "Baja fuerte vs P1" },
+        { name: "Alejandra Rodriguez", team: "Post venta", p1: 4000, p2: 2950, note: "Top performer del equipo" },
+        { name: "Ariana Leiva", team: "Post venta", p1: 2550, p2: 0, note: "P2 sin facturación registrada" },
+        { name: "David Espinoza", team: "Post venta", p1: 900, p2: 2500, note: "Gran mejora" },
+        { name: "Jonathan Salinas", team: "Post venta", p1: 400, p2: 2500, note: "Crecimiento significativo" },
+        { name: "Mario Castano", team: "Post venta", p1: 1500, p2: 580, note: "Baja vs P1" },
+        { name: "Nicole Garcia", team: "Post venta", p1: 1750, p2: 1525, note: "Leve baja" },
+        { name: "Veronica Ramirez", team: "Post venta", p1: 2236, p2: 1250, note: "Baja vs P1" },
+      ],
+
+      conclusions: [
+        { title: "Volumen de llamadas y contactos a la baja", text: "Dials -921 y Contacts -169 en P2; revisar pacing diario, listas y horarios de marcación." },
+        { title: "Inbound sube, pero cae facturación", text: "Lead Inbound +35 (70 → 105) pero Facturado Nuevo -$3,226 (23,422 → 20,196). Enfocar en seguimiento y conversión." },
+        { title: "Cotizaciones mejoran, presentaciones bajan", text: "Cotizaciones +4 (4 → 8) mientras Presentación -8 (33 → 25). Revisar calidad del lead y handoff presentación→cotización." },
+        { title: "Eficiencia operativa mejora", text: "Promedio Timer baja 0:52:16 por agente; mantener prácticas que reducen tiempo sin afectar calidad." },
+      ]
+    };
+
+    // =========================
+    // Helpers
+    // =========================
+    const money = (n) => Number(n||0).toLocaleString("en-US",{style:"currency",currency:"USD"});
+    const int = (n) => Number(n||0).toLocaleString("en-US");
+    const pct = (s) => String(s ?? "—");
+    const safe = (v) => (v===null || v===undefined || v==="") ? "—" : v;
+
+    function badgeForDiff(diff){
+      if (diff > 0) return { cls:"good", sym:"▲" };
+      if (diff < 0) return { cls:"bad", sym:"▼" };
+      return { cls:"warn", sym:"•" };
+    }
+    function diffInt(p1,p2){ return Number(p2||0) - Number(p1||0); }
+
+    // HH:MM:SS or HHH:MM:SS -> seconds
+    function timeToSec(t){
+      const parts = String(t).trim().split(":").map(Number);
+      if (parts.length !== 3 || parts.some(Number.isNaN)) return 0;
+      const [h,m,s] = parts;
+      return (h*3600)+(m*60)+s;
+    }
+    function secToTime(sec){
+      const sign = sec < 0 ? "-" : "";
+      sec = Math.abs(sec);
+      const h = Math.floor(sec/3600);
+      const m = Math.floor((sec%3600)/60);
+      const s = sec%60;
+      const pad = (x) => String(x).padStart(2,"0");
+      return `${sign}${h}:${pad(m)}:${pad(s)}`;
+    }
+
+    function formatKpiValue(k, v){
+      if (k.format === "money") return money(v);
+      if (k.format === "int") return int(v);
+      if (k.format === "time") return safe(v);
+      return safe(v);
+    }
+
+    function formatKpiDiff(k){
+      if (k.format === "time"){
+        const d = timeToSec(k.p2) - timeToSec(k.p1);
+        const b = badgeForDiff(d);
+        return { ...b, text: `${b.sym} ${secToTime(d)}` };
+      }
+      if (k.format === "money"){
+        const d = diffInt(k.p1, k.p2);
+        const b = badgeForDiff(d);
+        return { ...b, text: `${b.sym} ${money(Math.abs(d))}` };
+      }
+      const d = diffInt(k.p1, k.p2);
+      const b = badgeForDiff(d);
+      return { ...b, text: `${b.sym} ${int(Math.abs(d))}` };
+    }
+
+    // =========================
+    // Render KPIs (en tarjetas como el ejemplo)
+    // =========================
+    const kpiGrid = document.getElementById("kpiGrid");
+
+    // en el ejemplo solo salen 4 KPIs arriba; aquí mostramos 4 principales
+    const TOP4 = ["Success Five9","Lead Inbound","Success Hubspot","Facturado Nuevo"];
+    const topKpis = DATA.kpis.filter(k => TOP4.includes(k.name));
+
+    topKpis.forEach(k => {
+      const d = formatKpiDiff(k);
+      const el = document.createElement("div");
+      el.className = "card";
+      el.innerHTML = `
+        <div class="kpi-title">${k.name}</div>
+        <div class="kpi-line">
+          <span><b>P1:</b> ${formatKpiValue(k,k.p1)}</span>
+          <span>|</span>
+          <span><b>P2:</b> ${formatKpiValue(k,k.p2)}</span>
+          <span>|</span>
+          <span class="badge ${d.cls}">${d.text}</span>
+        </div>
+      `;
+      kpiGrid.appendChild(el);
+    });
+
+    // =========================
+    // Campañas y Clientes (estilo “19 | 40”)
+    // =========================
+    const camp = DATA.kpis.find(x=>x.name==="Total Campañas");
+    const totalClientes = DATA.stats.totalClientes;
+    document.getElementById("campClientesRow").textContent =
+      `${safe(camp?.p2)} | ${safe(totalClientes?.p2)}`;
+
+    // Conversiones MM (usamos Total Clientes P2 como proxy si no hay MM explícito; aquí tienes inboundMM)
+    document.getElementById("convMM").textContent = safe(DATA.stats.inboundMM?.p2);
+
+    // Facturado Nuevo (de KPI)
+    const factNuevo = DATA.kpis.find(x=>x.name==="Facturado Nuevo");
+    document.getElementById("factNuevo").textContent = money(factNuevo?.p2 || 0);
+
+    // =========================
+    // Resultados Inbound (como en el ejemplo, pero con lo que sí tenemos)
+    // =========================
+    const inboundBox = document.getElementById("inboundBox");
+    inboundBox.innerHTML = `
+      <div class="mini-stat"><span>Inbound Meses Ant.</span><b>${safe(DATA.stats.inboundMesesAnt?.p2)}</b></div>
+      <div class="mini-stat"><span>Nuevos Lead MM</span><b>${safe(DATA.stats.inboundMM?.p2)}</b></div>
+      <div class="mini-stat"><span>Conversión Inbound MM</span><b>${pct(DATA.stats.conversionInboundMM?.p2)}</b></div>
+      <div class="mini-stat"><span>IPC</span><b>${money(DATA.stats.ipc?.p2 || 0)}</b></div>
+    `;
+
+    // =========================
+    // Chart (comparativa)
+    // =========================
+    const chartLabels = ["Five9", "Inbound", "HubSpot", "Facturado"];
+    const kFive9 = DATA.kpis.find(x=>x.name==="Success Five9");
+    const kInbound = DATA.kpis.find(x=>x.name==="Lead Inbound");
+    const kHub = DATA.kpis.find(x=>x.name==="Success Hubspot");
+    const kFact = DATA.kpis.find(x=>x.name==="Facturado Nuevo");
+
+    new Chart(document.getElementById("chartKpis"), {
+      type: "bar",
+      data: {
+        labels: chartLabels,
+        datasets: [
+          { label: "P1", data: [kFive9?.p1||0, kInbound?.p1||0, kHub?.p1||0, kFact?.p1||0] },
+          { label: "P2", data: [kFive9?.p2||0, kInbound?.p2||0, kHub?.p2||0, kFact?.p2||0] },
+        ]
+      },
+      options: {
+        responsive:true,
+        maintainAspectRatio:false,
+        plugins:{ legend:{ position:"top" } }
+      }
+    });
+
+    // =========================
+    // Teams (bloques como el ejemplo)
+    // =========================
+    const teamsWrap = document.getElementById("teamsWrap");
+
+    DATA.teams.forEach(t => {
+      const diff = t.billing.p2 - t.billing.p1;
+      const pctChg = t.billing.p1 ? (diff / t.billing.p1) * 100 : 0;
+      const b = badgeForDiff(diff);
+
+      const card = document.createElement("div");
+      card.className = "card";
+      card.style.marginBottom = "14px";
+      card.innerHTML = `
+        <div class="team-head">
+          <div style="font-weight:700">${t.team}</div>
+          <div class="pill">Agentes: ${int(t.agents)}</div>
+        </div>
+
+        <div class="mini-stat"><span>Total Llamadas P1: ${int(t.calls.p1)} | P2: ${int(t.calls.p2)}</span><b></b></div>
+        <div class="mini-stat"><span>Total Contactos P1: ${int(t.contacts.p1)} | P2: ${int(t.contacts.p2)}</span><b></b></div>
+        <div class="mini-stat"><span>Facturación P1: ${money(t.billing.p1)} | P2: ${money(t.billing.p2)}</span><b></b></div>
+        <div class="mini-stat"><span>Promedio por Agente P1: ${money(t.avgPerAgent.p1)} | P2: ${money(t.avgPerAgent.p2)}</span><b></b></div>
+
+        <div class="sp-8"></div>
+        <div class="kpi-line">
+          <span><b>Top Performer:</b> ${t.topPerformer} ${t.topPerformerNote || ""}</span>
+        </div>
+        <div class="sp-8"></div>
+        <div class="kpi-line">
+          <span><b>Tendencia:</b></span>
+          <span class="badge ${b.cls}">${b.sym} ${Math.abs(pctChg).toFixed(1)}% en facturación</span>
+        </div>
+      `;
+      teamsWrap.appendChild(card);
+    });
+
+    // =========================
+    // Eficiencia (3 tarjetas)
+    // =========================
+    const effWrap = document.getElementById("effWrap");
+    const eff = [
+      { title: "Promedio Timer P1", value: `${DATA.stats.promedioTimer.p1} por agente` },
+      { title: "Promedio Timer P2", value: `${DATA.stats.promedioTimer.p2} por agente` },
+      { title: "Reducción de Tiempo", value: `${DATA.stats.promedioTimer.diff.replace("-","")} menos por agente` },
+    ];
+    eff.forEach(e => {
+      const el = document.createElement("div");
+      el.className = "card";
+      el.innerHTML = `
+        <div class="kpi-title">${e.title}</div>
+        <div style="font-size:18px; font-weight:700">${e.value}</div>
+      `;
+      effWrap.appendChild(el);
+    });
+
+    // =========================
+    // Tabla Agentes
+    // =========================
+    const agentsTbody = document.getElementById("agentsTbody");
+    DATA.agents
+      .slice()
+      .sort((a,b)=> (b.p2 - a.p2))
+      .forEach(a => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><b>${a.name}</b></td>
+          <td>${a.team}</td>
+          <td>${money(a.p1)}</td>
+          <td>${money(a.p2)}</td>
+          <td style="color: var(--muted)">${safe(a.note)}</td>
+        `;
+        agentsTbody.appendChild(tr);
+      });
+
+    // =========================
+    // Conclusiones (2 columnas)
+    // =========================
+    const conclusionsWrap = document.getElementById("conclusionsWrap");
+    DATA.conclusions.forEach(c => {
+      const el = document.createElement("div");
+      el.className = "card";
+      el.innerHTML = `<div class="kpi-title">${c.title}</div><p>${c.text}</p>`;
+      conclusionsWrap.appendChild(el);
+    });
+
+    document.getElementById("updatedAt").textContent =
+      `Última actualización: ${new Date(DATA.lastUpdatedISO).toLocaleString()}`;
+  </script>
+</body>
+</html>
