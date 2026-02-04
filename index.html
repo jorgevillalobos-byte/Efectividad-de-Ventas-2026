@@ -3,179 +3,132 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Resumen Ejecutivo | Ventas</title>
+  <title>Resumen Ejecutivo: Métricas Clave y Estadísticas del Mes</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-
   <style>
     :root{
-      --bg: #ffffff;
-      --text: #101828;
-      --muted: #667085;
-      --line: #e4e7ec;
-      --card: #f9fafb;
-      --shadow: 0 8px 24px rgba(16,24,40,.08);
-      --radius: 16px;
+      --bg:#ffffff;
+      --text:#101828;
+      --muted:#667085;
+      --line:#e4e7ec;
+      --card:#f9fafb;
+      --shadow:0 8px 24px rgba(16,24,40,.08);
+      --radius:16px;
 
-      --good: #12b76a;
-      --bad:  #f04438;
-      --warn: #f79009;
+      --good:#12b76a;
+      --bad:#f04438;
+      --warn:#f79009;
     }
     *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-    }
-    .wrap{max-width: 1040px; margin:0 auto; padding: 40px 18px 80px;}
-    h1{margin:0 0 18px; font-size: clamp(26px, 3.2vw, 40px); letter-spacing:-0.02em;}
-    h2{margin:0 0 10px; font-size: 20px; letter-spacing:-0.01em;}
-    p{margin:0; color: var(--muted); line-height:1.6}
-    .sp-8{height:8px}
-    .sp-14{height:14px}
-    .sp-24{height:24px}
-    .divider{height:1px; background: var(--line); margin: 22px 0;}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    .wrap{max-width:1040px;margin:0 auto;padding:40px 18px 80px}
+    h1{margin:0 0 18px;font-size:clamp(26px,3.2vw,40px);letter-spacing:-.02em}
+    h2{margin:0 0 10px;font-size:20px;letter-spacing:-.01em}
+    p{margin:0;color:var(--muted);line-height:1.6}
+    .sp-8{height:8px}.sp-14{height:14px}.sp-24{height:24px}
+    .divider{height:1px;background:var(--line);margin:22px 0}
 
-    .grid-kpis{
-      display:grid;
-      grid-template-columns: 1fr;
-      gap: 14px;
-    }
-    .grid-2{
-      display:grid;
-      grid-template-columns: 1fr;
-      gap: 14px;
-    }
-    .grid-3{
-      display:grid;
-      grid-template-columns: 1fr;
-      gap: 14px;
-    }
-    @media(min-width: 860px){
-      .grid-kpis{grid-template-columns: repeat(4, 1fr);}
-      .grid-2{grid-template-columns: 1.2fr .8fr;}
-      .grid-3{grid-template-columns: repeat(3, 1fr);}
-    }
+    /* ========== “Tarjetas del ejemplo” ========== */
+    .grid-kpis{display:grid;grid-template-columns:1fr;gap:14px}
+    @media(min-width:860px){.grid-kpis{grid-template-columns:repeat(4,1fr)}}
 
     .card{
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 16px 16px;
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:16px;
+    }
+    .kpi-title{font-size:14px;font-weight:700;margin:0 0 10px}
+    .kpi-line{font-size:13px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    .badge{
+      display:inline-flex;align-items:center;gap:6px;
+      font-weight:700;padding:2px 8px;border-radius:999px;
+      border:1px solid var(--line);background:#fff;font-size:12px;
+    }
+    .badge.good{color:var(--good);border-color:rgba(18,183,106,.25)}
+    .badge.bad{color:var(--bad);border-color:rgba(240,68,56,.25)}
+    .badge.warn{color:var(--warn);border-color:rgba(247,144,9,.25)}
+
+    .heroimg{
+      height:160px;border-radius:var(--radius);
+      border:1px solid var(--line);
+      background:linear-gradient(135deg,#eef2ff,#fef3f2,#ecfdf3);
+      margin:10px 0 20px;
     }
 
-    .kpi-title{
-      font-size: 14px;
-      font-weight: 700;
-      margin: 0 0 10px;
-    }
-    .kpi-line{
-      font-size: 13px;
-      color: var(--muted);
-      display:flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      align-items:center;
-    }
-    .badge{
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      font-weight:700;
-      padding: 2px 8px;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      background:#fff;
-      font-size: 12px;
-    }
-    .badge.good{color: var(--good); border-color: rgba(18,183,106,.25)}
-    .badge.bad{color: var(--bad); border-color: rgba(240,68,56,.25)}
-    .badge.warn{color: var(--warn); border-color: rgba(247,144,9,.25)}
+    .grid-2{display:grid;grid-template-columns:1fr;gap:14px}
+    @media(min-width:860px){.grid-2{grid-template-columns:1.2fr .8fr}}
+    .section-title{font-weight:700;margin:0 0 8px}
 
     .mini-stat{
-      display:flex;
-      justify-content:space-between;
-      gap: 12px;
-      padding: 10px 0;
-      border-bottom: 1px solid var(--line);
+      display:flex;justify-content:space-between;gap:12px;
+      padding:10px 0;border-bottom:1px solid var(--line);
     }
     .mini-stat:last-child{border-bottom:none}
-    .mini-stat b{font-size: 14px}
-    .mini-stat span{color: var(--muted)}
-    .heroimg{
-      height: 160px;
-      border-radius: var(--radius);
-      border: 1px solid var(--line);
-      background: linear-gradient(135deg, #eef2ff, #fef3f2, #ecfdf3);
-      margin: 10px 0 20px;
-    }
+    .mini-stat b{font-size:14px}
+    .mini-stat span{color:var(--muted)}
 
-    .section-title{
-      font-weight:700;
-      margin: 0 0 8px;
-    }
-    .team-head{
-      display:flex;
-      flex-wrap:wrap;
-      gap: 10px;
-      align-items:center;
-      justify-content:space-between;
-      margin-bottom: 8px;
-    }
-    .pill{
-      font-size:12px;
-      color: var(--muted);
-      border: 1px solid var(--line);
-      background:#fff;
-      padding: 6px 10px;
-      border-radius: 999px;
-    }
-
-    table{
-      width:100%;
-      border-collapse: collapse;
-      font-size: 13px;
+    /* ========== Resumen Ejecutivo: Comparativa de Períodos (NO NEGOCIABLE) ========== */
+    .compare-card{padding:0; overflow:hidden}
+    .compare-head{
+      padding:16px;
       background: #fff;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      overflow:hidden;
+      border-bottom:1px solid var(--line);
     }
-    th, td{
+    table.compare{
+      width:100%;
+      border-collapse:collapse;
+      background:#fff;
+      font-size:13px;
+    }
+    table.compare th, table.compare td{
       text-align:left;
-      padding: 10px 10px;
-      border-bottom: 1px solid var(--line);
-      vertical-align: top;
+      padding:10px 12px;
+      border-bottom:1px solid var(--line);
+      vertical-align:top;
     }
-    th{color: var(--muted); font-weight: 700;}
-    tr:last-child td{border-bottom:none}
-
-    .foot{
-      margin-top: 26px;
-      color: var(--muted);
-      font-size: 12px;
-      display:flex;
-      justify-content:space-between;
-      flex-wrap:wrap;
-      gap: 10px;
+    table.compare th{color:var(--muted);font-weight:700}
+    table.compare tr:last-child td{border-bottom:none}
+    .delta{
+      font-weight:700;
+      display:inline-flex;align-items:center;gap:6px;
     }
+    .delta.good{color:var(--good)}
+    .delta.bad{color:var(--bad)}
+    .delta.warn{color:var(--warn)}
 
-    canvas{width:100% !important; height: 260px !important;}
+    /* ========== Teams ========== */
+    .team-head{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:8px}
+    .pill{font-size:12px;color:var(--muted);border:1px solid var(--line);background:#fff;padding:6px 10px;border-radius:999px}
+
+    /* ========== Rendimiento por Agente (tarjetas como el ejemplo) ========== */
+    .perf-wrap{display:grid;grid-template-columns:1fr;gap:14px}
+    @media(min-width:860px){.perf-wrap{grid-template-columns:repeat(3,1fr)}}
+    .perf-name{font-weight:700;margin:0 0 8px}
+    .perf-money{font-size:13px;color:var(--muted);margin:0 0 8px}
+    .perf-desc{font-size:13px;color:var(--muted);line-height:1.5;margin:0}
+
+    /* ========== Conclusiones ========== */
+    .concl-wrap{display:grid;grid-template-columns:1fr;gap:14px}
+    @media(min-width:860px){.concl-wrap{grid-template-columns:repeat(2,1fr)}}
+
+    .foot{margin-top:26px;color:var(--muted);font-size:12px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
   </style>
 </head>
 
 <body>
   <div class="wrap">
     <h1>Resumen Ejecutivo: Métricas Clave y Estadísticas del Mes</h1>
-
     <div class="heroimg" aria-hidden="true"></div>
 
-    <!-- KPIs (como el ejemplo) -->
+    <!-- =========================
+         TARJETAS KPI (IGUAL AL EJEMPLO)
+         ========================= -->
     <div class="grid-kpis" id="kpiGrid"></div>
 
     <div class="sp-24"></div>
@@ -184,9 +137,11 @@
     <div class="sp-14"></div>
 
     <div class="grid-2">
+      <!-- Campañas y Clientes (estructura del ejemplo) -->
       <div class="card">
         <div class="section-title">Campañas y Clientes</div>
-        <div id="campClientesRow" class="kpi-line" style="font-weight:700; color:var(--text)"></div>
+        <div id="campClientesValue" style="font-weight:700;color:var(--text);font-size:14px">—</div>
+
         <div class="divider"></div>
 
         <div class="mini-stat">
@@ -199,61 +154,115 @@
         </div>
       </div>
 
+      <!-- Resultados Inbound (estructura del ejemplo; con lo disponible en tu data) -->
       <div class="card">
         <div class="section-title">Resultados Inbound</div>
-        <div id="inboundBox"></div>
+
+        <div class="mini-stat">
+          <span>Inbound Meses Ant.</span>
+          <b id="inbMesAnt">—</b>
+        </div>
+        <div class="mini-stat">
+          <span>Inbound MM</span>
+          <b id="inbMM">—</b>
+        </div>
+        <div class="mini-stat">
+          <span>Leads (Inbound)</span>
+          <b id="leadsInbound">—</b>
+        </div>
+        <div class="mini-stat">
+          <span>IPC</span>
+          <b id="ipc">—</b>
+        </div>
+        <div class="mini-stat">
+          <span>ROI</span>
+          <b id="roi">—</b>
+        </div>
       </div>
     </div>
 
     <div class="sp-24"></div>
 
+    <!-- =========================
+         RESUMEN EJECUTIVO: COMPARATIVA DE PERÍODOS (FUNDAMENTAL)
+         - Misma estructura: título + bloque comparativo
+         ========================= -->
     <h2>Resumen Ejecutivo: Comparativa de Períodos</h2>
-    <div class="sp-8"></div>
-    <div class="card">
-      <canvas id="chartKpis"></canvas>
+    <div class="sp-14"></div>
+
+    <div class="card compare-card">
+      <div class="compare-head">
+        <div class="kpi-line" style="margin:0">
+          <span><b>P1:</b> <span id="p1Label">—</span></span>
+          <span>|</span>
+          <span><b>P2:</b> <span id="p2Label">—</span></span>
+        </div>
+      </div>
+
+      <table class="compare" aria-label="Comparativa de períodos">
+        <thead>
+          <tr>
+            <th style="width:40%">Métrica</th>
+            <th style="width:20%">P1</th>
+            <th style="width:20%">P2</th>
+            <th style="width:20%">Δ</th>
+          </tr>
+        </thead>
+        <tbody id="compareTbody"></tbody>
+      </table>
     </div>
 
     <div class="sp-24"></div>
 
+    <!-- =========================
+         Resumen General por Equipo (misma estructura del ejemplo)
+         ========================= -->
     <h2>Resumen General por Equipo</h2>
     <div class="sp-8"></div>
-    <p>Una visión comparativa del rendimiento de nuestros equipos.</p>
-
+    <p>Una visión comparativa del rendimiento de nuestros equipos de Ventas Anuar y Post Venta.</p>
     <div class="sp-14"></div>
 
     <div id="teamsWrap"></div>
 
     <div class="sp-24"></div>
 
+    <!-- =========================
+         Eficiencia (3 tarjetas como el ejemplo)
+         ========================= -->
     <h2>Análisis de Tiempo y Eficiencia Operativa</h2>
     <div class="sp-14"></div>
-    <div class="grid-3" id="effWrap"></div>
+    <div class="grid-kpis" id="effWrap" style="grid-template-columns:1fr;gap:14px"></div>
+    <style>
+      @media(min-width:860px){
+        #effWrap{grid-template-columns:repeat(3,1fr)!important}
+      }
+    </style>
 
     <div class="sp-24"></div>
 
-    <h2>Rendimiento por Agente</h2>
+    <!-- =========================
+         Rendimiento por equipo (tarjetas como el ejemplo)
+         ========================= -->
+    <div class="heroimg" aria-hidden="true" style="height:120px"></div>
+
+    <h2>Rendimiento del Equipo de Ventas Anuar</h2>
     <div class="sp-14"></div>
-
-    <div class="card" style="padding:0">
-      <table>
-        <thead>
-          <tr>
-            <th>Agente</th>
-            <th>Equipo</th>
-            <th>Período 1</th>
-            <th>Período 2</th>
-            <th>Descripción</th>
-          </tr>
-        </thead>
-        <tbody id="agentsTbody"></tbody>
-      </table>
-    </div>
+    <div class="perf-wrap" id="perfAnuar"></div>
 
     <div class="sp-24"></div>
 
+    <h2>Rendimiento del Equipo Post Venta</h2>
+    <div class="sp-14"></div>
+    <div class="perf-wrap" id="perfPost"></div>
+
+    <div class="sp-24"></div>
+
+    <!-- =========================
+         Conclusiones (estructura del ejemplo)
+         ========================= -->
     <h2>Conclusiones y Recomendaciones Estratégicas</h2>
     <div class="sp-14"></div>
-    <div class="grid-2" id="conclusionsWrap"></div>
+    <div class="concl-wrap" id="conclusionsWrap"></div>
 
     <div class="foot">
       <div>Publicado en GitHub Pages (HTML/CSS/JS)</div>
@@ -266,11 +275,22 @@
     // DATA (tu semana)
     // =========================
     const DATA = {
-      periodLabels: { p1: "Period - 1/19/2026 1/23/2026", p2: "Period - 1/26/2026 1/30/2026" },
+      periodLabels: {
+        p1: "Period - 1/19/2026 1/23/2026",
+        p2: "Period - 1/26/2026 1/30/2026"
+      },
       lastUpdatedISO: new Date().toISOString(),
 
-      // RESUMEN COMPARATIVO (arriba)
-      kpis: [
+      // KPIs “tarjetas del ejemplo” (4 arriba)
+      topCards: [
+        { name: "Éxitos en Five9", p1: 40, p2: 38, format: "int" },
+        { name: "Lead Inbound", p1: 70, p2: 105, format: "int" },
+        { name: "Éxitos en HubSpot", p1: 37, p2: 33, format: "int" },
+        { name: "Facturación Total", p1: 23422, p2: 20196, format: "money" }
+      ],
+
+      // RESUMEN COMPARATIVO (para “Comparativa de Períodos”)
+      compare: [
         { name: "Total de Llamadas (Dials)", p1: 10313, p2: 9392, format: "int" },
         { name: "Contacts", p1: 3178, p2: 3009, format: "int" },
         { name: "Talk Time", p1: "167:25:45", p2: "164:39:10", format: "time" },
@@ -278,22 +298,32 @@
         { name: "Lead Inbound", p1: 70, p2: 105, format: "int" },
         { name: "Presentación", p1: 33, p2: 25, format: "int" },
         { name: "Cotizaciones", p1: 4, p2: 8, format: "int" },
-        { name: "Success Hubspot", p1: 37, p2: 33, format: "int" },
+        { name: "Success HubSpot", p1: 37, p2: 33, format: "int" },
         { name: "Facturado Nuevo", p1: 23422, p2: 20196, format: "money" },
         { name: "Total Campañas", p1: 5, p2: 0, format: "int" },
+
+        // bloque inferior del resumen
+        { name: "Clientes (F. sin conexión)", p1: 4, p2: 2, format: "int" },
+        { name: "Referidos", p1: 0, p2: 0, format: "int" },
+        { name: "Inbound Meses Ant.", p1: 4, p2: 0, format: "int" },
+        { name: "Inbound MM", p1: 1, p2: 3, format: "int" },
+        { name: "Total Clientes", p1: 9, p2: 5, format: "int" },
+        { name: "Promedio Timer por Agente", p1: "11:09:43", p2: "10:17:27", format: "time" },
+        { name: "Conversión de Clientes", p1: "24.32%", p2: "15.15%", format: "text" },
+        { name: "Conversión Inbound MM", p1: "1.43%", p2: "2.86%", format: "text" },
+        { name: "IPC", p1: 212.93, p2: 141.23, format: "money" }
       ],
 
-      // Bloque inferior del resumen
+      // Stats para “Campañas y Clientes” y “Inbound”
       stats: {
-        clientesSinConexion: { p1: 4, p2: 2 },
-        referidos: { p1: 0, p2: 0 },
-        inboundMesesAnt: { p1: 4, p2: 0 },
-        inboundMM: { p1: 1, p2: 3 },
+        totalCampañas: { p1: 5, p2: 0 },
         totalClientes: { p1: 9, p2: 5 },
-        promedioTimer: { p1: "11:09:43", p2: "10:17:27", diff: "-0:52:16" },
-        conversionClientes: { p1: "24.32%", p2: "15.15%" },
-        conversionInboundMM: { p1: "1.43%", p2: "2.86%" },
-        ipc: { p1: 212.93, p2: 141.23 }
+        inboundMM: { p1: 1, p2: 3 },
+        facturadoNuevo: { p1: 23422, p2: 20196 },
+        inboundMesesAnt: { p1: 4, p2: 0 },
+        leadsInbound: { p1: 70, p2: 105 },
+        ipc: { p1: 212.93, p2: 141.23 },
+        roi: { p1: null, p2: null } // no viene en tu data semanal
       },
 
       teams: [
@@ -305,43 +335,54 @@
           billing: { p1: 6936, p2: 7625 },
           avgPerAgent: { p1: 1156.00, p2: 1089.29 },
           topPerformer: "Mariett Castro",
-          topPerformerNote: "($2,505 → $1,475)",
+          topPerformerNote: "($2,505 → $1,475)"
         },
         {
-          team: "Post venta",
+          team: "Equipo Post Venta",
           agents: 9,
           calls: { p1: 4299, p2: 3978 },
           contacts: { p1: 2488, p2: 2312 },
           billing: { p1: 16486, p2: 12571 },
           avgPerAgent: { p1: 1831.78, p2: 1396.78 },
           topPerformer: "Alejandra Rodriguez",
-          topPerformerNote: "($4,000 → $2,950)",
+          topPerformerNote: "($4,000 → $2,950)"
         }
       ],
 
-      agents: [
-        { name: "Angeles Espinoza", team: "Equipo de Ventas Anuar", p1: 1275, p2: 1800, note: "Sube facturación en P2" },
-        { name: "Geraldine Murillo", team: "Equipo de Ventas Anuar", p1: 1000, p2: 0, note: "P2 sin facturación registrada" },
-        { name: "Judith Mercado", team: "Equipo de Ventas Anuar", p1: 0, p2: 2050, note: "Mayor empuje en P2" },
-        { name: "Rodrigo Guadamuz", team: "Equipo de Ventas Anuar", p1: 1006, p2: 1100, note: "Mejora ligera vs P1" },
-        { name: "Alexia Rodríguez", team: "Equipo de Ventas Anuar", p1: 1150, p2: 1200, note: "Estable" },
-        { name: "Mariett Castro", team: "Equipo de Ventas Anuar", p1: 2505, p2: 1475, note: "Caída vs P1" },
+      efficiency: {
+        p1: "11:09:43",
+        p2: "10:17:27",
+        diff: "0:52:16"
+      },
 
-        { name: "Andrea Rivera", team: "Post venta", p1: 3150, p2: 1266, note: "Baja fuerte vs P1" },
-        { name: "Alejandra Rodriguez", team: "Post venta", p1: 4000, p2: 2950, note: "Top performer del equipo" },
-        { name: "Ariana Leiva", team: "Post venta", p1: 2550, p2: 0, note: "P2 sin facturación registrada" },
-        { name: "David Espinoza", team: "Post venta", p1: 900, p2: 2500, note: "Gran mejora" },
-        { name: "Jonathan Salinas", team: "Post venta", p1: 400, p2: 2500, note: "Crecimiento significativo" },
-        { name: "Mario Castano", team: "Post venta", p1: 1500, p2: 580, note: "Baja vs P1" },
-        { name: "Nicole Garcia", team: "Post venta", p1: 1750, p2: 1525, note: "Leve baja" },
-        { name: "Veronica Ramirez", team: "Post venta", p1: 2236, p2: 1250, note: "Baja vs P1" },
+      // Facturado por agente (P1 vs P2) + nota (se usa en rendimiento)
+      agents: [
+        // Ventas Anuar
+        { name: "Judith Mercado", team: "Equipo de Ventas Anuar", p1: 0, p2: 2050, note: "Mayor empuje en P2" },
+        { name: "Angeles Espinoza", team: "Equipo de Ventas Anuar", p1: 1275, p2: 1800, note: "Sube facturación en P2" },
+        { name: "Mariett Castro", team: "Equipo de Ventas Anuar", p1: 2505, p2: 1475, note: "Caída vs P1" },
+        { name: "Alexia Rodríguez", team: "Equipo de Ventas Anuar", p1: 1150, p2: 1200, note: "Estable" },
+        { name: "Rodrigo Guadamuz", team: "Equipo de Ventas Anuar", p1: 1006, p2: 1100, note: "Mejora ligera vs P1" },
+        { name: "Geraldine Murillo", team: "Equipo de Ventas Anuar", p1: 1000, p2: 0, note: "P2 sin facturación registrada" },
+        { name: "Steven Pereira", team: "Equipo de Ventas Anuar", p1: 0, p2: 0, note: "Nuevo en P2 (sin facturación)" },
+
+        // Post venta
+        { name: "Alejandra Rodriguez", team: "Equipo Post Venta", p1: 4000, p2: 2950, note: "Top performer absoluto del período analizado" },
+        { name: "David Espinoza", team: "Equipo Post Venta", p1: 900, p2: 2500, note: "Crecimiento significativo" },
+        { name: "Jonathan Salinas", team: "Equipo Post Venta", p1: 400, p2: 2500, note: "Crecimiento significativo" },
+        { name: "Nicole Garcia", team: "Equipo Post Venta", p1: 1750, p2: 1525, note: "Alta actividad; mantener calidad de presentaciones" },
+        { name: "Veronica Ramirez", team: "Equipo Post Venta", p1: 2236, p2: 1250, note: "Especialista en campañas / sin conexión (revisar caída)" },
+        { name: "Andrea Rivera", team: "Equipo Post Venta", p1: 3150, p2: 1266, note: "Mayor variación; revisar pipeline" },
+        { name: "Mario Castano", team: "Equipo Post Venta", p1: 1500, p2: 580, note: "Baja vs P1" },
+        { name: "Ariana Leiva", team: "Equipo Post Venta", p1: 2550, p2: 0, note: "P2 sin facturación registrada" },
+        { name: "Paola Paz", team: "Equipo Post Venta", p1: 0, p2: 0, note: "Sin facturación registrada" }
       ],
 
       conclusions: [
-        { title: "Volumen de llamadas y contactos a la baja", text: "Dials -921 y Contacts -169 en P2; revisar pacing diario, listas y horarios de marcación." },
-        { title: "Inbound sube, pero cae facturación", text: "Lead Inbound +35 (70 → 105) pero Facturado Nuevo -$3,226 (23,422 → 20,196). Enfocar en seguimiento y conversión." },
-        { title: "Cotizaciones mejoran, presentaciones bajan", text: "Cotizaciones +4 (4 → 8) mientras Presentación -8 (33 → 25). Revisar calidad del lead y handoff presentación→cotización." },
-        { title: "Eficiencia operativa mejora", text: "Promedio Timer baja 0:52:16 por agente; mantener prácticas que reducen tiempo sin afectar calidad." },
+        { title: "Facturación Positiva / Negativa", text: "Variación de -$3,226 en ingresos (P1 $23,422 → P2 $20,196)." },
+        { title: "Optimizar Conversión", text: "Inbound sube (+35), pero cae facturación. Enfocar en seguimiento y conversión de leads a cierres." },
+        { title: "Capacitación Continua", text: "Refuerzo de objeciones, guiones y seguimiento para sostener volumen con mejor tasa de éxito." },
+        { title: "Próximos Pasos", text: "Implementar seguimiento semanal de KPIs, metas individuales por agente y programa de reconocimiento." }
       ]
     };
 
@@ -350,7 +391,6 @@
     // =========================
     const money = (n) => Number(n||0).toLocaleString("en-US",{style:"currency",currency:"USD"});
     const int = (n) => Number(n||0).toLocaleString("en-US");
-    const pct = (s) => String(s ?? "—");
     const safe = (v) => (v===null || v===undefined || v==="") ? "—" : v;
 
     function badgeForDiff(diff){
@@ -358,9 +398,8 @@
       if (diff < 0) return { cls:"bad", sym:"▼" };
       return { cls:"warn", sym:"•" };
     }
-    function diffInt(p1,p2){ return Number(p2||0) - Number(p1||0); }
 
-    // HH:MM:SS or HHH:MM:SS -> seconds
+    // time "HH:MM:SS" or "HHH:MM:SS" -> seconds
     function timeToSec(t){
       const parts = String(t).trim().split(":").map(Number);
       if (parts.length !== 3 || parts.some(Number.isNaN)) return 0;
@@ -377,111 +416,110 @@
       return `${sign}${h}:${pad(m)}:${pad(s)}`;
     }
 
-    function formatKpiValue(k, v){
-      if (k.format === "money") return money(v);
-      if (k.format === "int") return int(v);
-      if (k.format === "time") return safe(v);
+    function formatValue(format, v){
+      if (format === "money") return money(v);
+      if (format === "int") return int(v);
+      if (format === "time") return safe(v);
       return safe(v);
     }
 
-    function formatKpiDiff(k){
-      if (k.format === "time"){
-        const d = timeToSec(k.p2) - timeToSec(k.p1);
+    function computeDelta(row){
+      if (row.format === "time"){
+        const d = timeToSec(row.p2) - timeToSec(row.p1);
         const b = badgeForDiff(d);
         return { ...b, text: `${b.sym} ${secToTime(d)}` };
       }
-      if (k.format === "money"){
-        const d = diffInt(k.p1, k.p2);
+      if (row.format === "money"){
+        const d = Number(row.p2||0) - Number(row.p1||0);
         const b = badgeForDiff(d);
         return { ...b, text: `${b.sym} ${money(Math.abs(d))}` };
       }
-      const d = diffInt(k.p1, k.p2);
-      const b = badgeForDiff(d);
-      return { ...b, text: `${b.sym} ${int(Math.abs(d))}` };
+      if (row.format === "int"){
+        const d = Number(row.p2||0) - Number(row.p1||0);
+        const b = badgeForDiff(d);
+        return { ...b, text: `${b.sym} ${int(Math.abs(d))}` };
+      }
+      // text: no delta numérico
+      return { cls:"warn", sym:"•", text:"—" };
     }
 
     // =========================
-    // Render KPIs (en tarjetas como el ejemplo)
+    // Render top KPI cards (IGUAL AL EJEMPLO)
     // =========================
     const kpiGrid = document.getElementById("kpiGrid");
+    DATA.topCards.forEach(k => {
+      let diffNum = 0;
+      let badge = { cls:"warn", sym:"•", text:"—" };
 
-    // en el ejemplo solo salen 4 KPIs arriba; aquí mostramos 4 principales
-    const TOP4 = ["Success Five9","Lead Inbound","Success Hubspot","Facturado Nuevo"];
-    const topKpis = DATA.kpis.filter(k => TOP4.includes(k.name));
+      if (k.format === "money"){
+        diffNum = Number(k.p2||0) - Number(k.p1||0);
+        const b = badgeForDiff(diffNum);
+        badge = { ...b, text: `${b.sym} ${diffNum>=0?"+":""}${money(Math.abs(diffNum))}` };
+      } else {
+        diffNum = Number(k.p2||0) - Number(k.p1||0);
+        const b = badgeForDiff(diffNum);
+        badge = { ...b, text: `${b.sym} ${diffNum>=0?"+":""}${int(Math.abs(diffNum))}` };
+      }
 
-    topKpis.forEach(k => {
-      const d = formatKpiDiff(k);
       const el = document.createElement("div");
       el.className = "card";
       el.innerHTML = `
         <div class="kpi-title">${k.name}</div>
         <div class="kpi-line">
-          <span><b>P1:</b> ${formatKpiValue(k,k.p1)}</span>
+          <span><b>P1:</b> ${formatValue(k.format, k.p1)}</span>
           <span>|</span>
-          <span><b>P2:</b> ${formatKpiValue(k,k.p2)}</span>
+          <span><b>P2:</b> ${formatValue(k.format, k.p2)}</span>
           <span>|</span>
-          <span class="badge ${d.cls}">${d.text}</span>
+          <span class="badge ${badge.cls}">${badge.text}</span>
         </div>
       `;
       kpiGrid.appendChild(el);
     });
 
     // =========================
-    // Campañas y Clientes (estilo “19 | 40”)
+    // Campañas y Clientes (valor tipo “19 | 40”)
     // =========================
-    const camp = DATA.kpis.find(x=>x.name==="Total Campañas");
-    const totalClientes = DATA.stats.totalClientes;
-    document.getElementById("campClientesRow").textContent =
-      `${safe(camp?.p2)} | ${safe(totalClientes?.p2)}`;
+    document.getElementById("campClientesValue").textContent =
+      `${safe(DATA.stats.totalCampañas.p2)} | ${safe(DATA.stats.totalClientes.p2)}`;
 
-    // Conversiones MM (usamos Total Clientes P2 como proxy si no hay MM explícito; aquí tienes inboundMM)
-    document.getElementById("convMM").textContent = safe(DATA.stats.inboundMM?.p2);
+    // Conversiones MM (usamos Inbound MM del resumen)
+    document.getElementById("convMM").textContent = safe(DATA.stats.inboundMM.p2);
 
-    // Facturado Nuevo (de KPI)
-    const factNuevo = DATA.kpis.find(x=>x.name==="Facturado Nuevo");
-    document.getElementById("factNuevo").textContent = money(factNuevo?.p2 || 0);
+    // Facturado Nuevo (sección)
+    document.getElementById("factNuevo").textContent = money(DATA.stats.facturadoNuevo.p2);
 
     // =========================
-    // Resultados Inbound (como en el ejemplo, pero con lo que sí tenemos)
+    // Resultados Inbound (misma estructura; con lo disponible)
     // =========================
-    const inboundBox = document.getElementById("inboundBox");
-    inboundBox.innerHTML = `
-      <div class="mini-stat"><span>Inbound Meses Ant.</span><b>${safe(DATA.stats.inboundMesesAnt?.p2)}</b></div>
-      <div class="mini-stat"><span>Nuevos Lead MM</span><b>${safe(DATA.stats.inboundMM?.p2)}</b></div>
-      <div class="mini-stat"><span>Conversión Inbound MM</span><b>${pct(DATA.stats.conversionInboundMM?.p2)}</b></div>
-      <div class="mini-stat"><span>IPC</span><b>${money(DATA.stats.ipc?.p2 || 0)}</b></div>
-    `;
+    document.getElementById("inbMesAnt").textContent = safe(DATA.stats.inboundMesesAnt.p2);
+    document.getElementById("inbMM").textContent = safe(DATA.stats.inboundMM.p2);
+    document.getElementById("leadsInbound").textContent = safe(DATA.stats.leadsInbound.p2);
+    document.getElementById("ipc").textContent = money(DATA.stats.ipc.p2);
+    document.getElementById("roi").textContent = "—"; // no viene en tu data semanal
 
     // =========================
-    // Chart (comparativa)
+    // Comparativa de Períodos (TABLA FUNDAMENTAL)
     // =========================
-    const chartLabels = ["Five9", "Inbound", "HubSpot", "Facturado"];
-    const kFive9 = DATA.kpis.find(x=>x.name==="Success Five9");
-    const kInbound = DATA.kpis.find(x=>x.name==="Lead Inbound");
-    const kHub = DATA.kpis.find(x=>x.name==="Success Hubspot");
-    const kFact = DATA.kpis.find(x=>x.name==="Facturado Nuevo");
+    document.getElementById("p1Label").textContent = DATA.periodLabels.p1;
+    document.getElementById("p2Label").textContent = DATA.periodLabels.p2;
 
-    new Chart(document.getElementById("chartKpis"), {
-      type: "bar",
-      data: {
-        labels: chartLabels,
-        datasets: [
-          { label: "P1", data: [kFive9?.p1||0, kInbound?.p1||0, kHub?.p1||0, kFact?.p1||0] },
-          { label: "P2", data: [kFive9?.p2||0, kInbound?.p2||0, kHub?.p2||0, kFact?.p2||0] },
-        ]
-      },
-      options: {
-        responsive:true,
-        maintainAspectRatio:false,
-        plugins:{ legend:{ position:"top" } }
-      }
+    const tbody = document.getElementById("compareTbody");
+    DATA.compare.forEach(r => {
+      const d = computeDelta(r);
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td><b>${r.name}</b></td>
+        <td>${formatValue(r.format, r.p1)}</td>
+        <td>${formatValue(r.format, r.p2)}</td>
+        <td><span class="delta ${d.cls}">${d.text}</span></td>
+      `;
+      tbody.appendChild(tr);
     });
 
     // =========================
-    // Teams (bloques como el ejemplo)
+    // Teams (misma estructura del ejemplo)
     // =========================
     const teamsWrap = document.getElementById("teamsWrap");
-
     DATA.teams.forEach(t => {
       const diff = t.billing.p2 - t.billing.p1;
       const pctChg = t.billing.p1 ? (diff / t.billing.p1) * 100 : 0;
@@ -502,13 +540,11 @@
         <div class="mini-stat"><span>Promedio por Agente P1: ${money(t.avgPerAgent.p1)} | P2: ${money(t.avgPerAgent.p2)}</span><b></b></div>
 
         <div class="sp-8"></div>
-        <div class="kpi-line">
-          <span><b>Top Performer:</b> ${t.topPerformer} ${t.topPerformerNote || ""}</span>
-        </div>
+        <div class="kpi-line"><span><b>Top Performer:</b> ${t.topPerformer} ${t.topPerformerNote || ""}</span></div>
         <div class="sp-8"></div>
         <div class="kpi-line">
           <span><b>Tendencia:</b></span>
-          <span class="badge ${b.cls}">${b.sym} ${Math.abs(pctChg).toFixed(1)}% en facturación</span>
+          <span class="badge ${b.cls}">${b.sym} ${pctChg>=0?"+":""}${Math.abs(pctChg).toFixed(1)}% en facturación</span>
         </div>
       `;
       teamsWrap.appendChild(card);
@@ -518,42 +554,51 @@
     // Eficiencia (3 tarjetas)
     // =========================
     const effWrap = document.getElementById("effWrap");
-    const eff = [
-      { title: "Promedio Timer P1", value: `${DATA.stats.promedioTimer.p1} por agente` },
-      { title: "Promedio Timer P2", value: `${DATA.stats.promedioTimer.p2} por agente` },
-      { title: "Reducción de Tiempo", value: `${DATA.stats.promedioTimer.diff.replace("-","")} menos por agente` },
+    const effCards = [
+      { title: "Promedio Timer P1", value: `${DATA.efficiency.p1} por agente` },
+      { title: "Promedio Timer P2", value: `${DATA.efficiency.p2} por agente` },
+      { title: "Reducción de Tiempo", value: `${DATA.efficiency.diff} menos por agente` }
     ];
-    eff.forEach(e => {
+    effCards.forEach(e => {
       const el = document.createElement("div");
       el.className = "card";
       el.innerHTML = `
         <div class="kpi-title">${e.title}</div>
-        <div style="font-size:18px; font-weight:700">${e.value}</div>
+        <div style="font-size:18px;font-weight:700">${e.value}</div>
       `;
       effWrap.appendChild(el);
     });
 
     // =========================
-    // Tabla Agentes
+    // Rendimiento por equipo (tarjetas como el ejemplo)
+    // - Anuar: top 3 por P2
+    // - Post: top 5 por P2
     // =========================
-    const agentsTbody = document.getElementById("agentsTbody");
-    DATA.agents
-      .slice()
-      .sort((a,b)=> (b.p2 - a.p2))
-      .forEach(a => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td><b>${a.name}</b></td>
-          <td>${a.team}</td>
-          <td>${money(a.p1)}</td>
-          <td>${money(a.p2)}</td>
-          <td style="color: var(--muted)">${safe(a.note)}</td>
+    function renderPerformance(teamName, containerId, topN){
+      const list = DATA.agents
+        .filter(a => a.team === teamName)
+        .slice()
+        .sort((a,b) => (b.p2 - a.p2))
+        .slice(0, topN);
+
+      const container = document.getElementById(containerId);
+      list.forEach(a => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <div class="perf-name">${a.name}</div>
+          <div class="perf-money">Período 1: ${money(a.p1)} | Período 2: ${money(a.p2)}</div>
+          <p class="perf-desc">${safe(a.note)}</p>
         `;
-        agentsTbody.appendChild(tr);
+        container.appendChild(card);
       });
+    }
+
+    renderPerformance("Equipo de Ventas Anuar", "perfAnuar", 3);
+    renderPerformance("Equipo Post Venta", "perfPost", 5);
 
     // =========================
-    // Conclusiones (2 columnas)
+    // Conclusiones (tarjetas)
     // =========================
     const conclusionsWrap = document.getElementById("conclusionsWrap");
     DATA.conclusions.forEach(c => {
@@ -568,3 +613,4 @@
   </script>
 </body>
 </html>
+
